@@ -1,12 +1,10 @@
 const path = require('path');
-const autoprefixer = require('autoprefixer');
-const postcssImport = require('postcss-import');
+const postcssPresetEnv = require('postcss-preset-env');
+
 const merge = require('webpack-merge');
 
 const development = require('./dev.config');
 const production = require('./prod.config');
-
-require('babel-polyfill').default;
 
 const TARGET = process.env.npm_lifecycle_event;
 
@@ -19,7 +17,7 @@ process.env.BABEL_ENV = TARGET;
 
 const common = {
     entry: [
-        PATHS.app,
+        'react-hot-loader/patch', PATHS.app,
     ],
 
     output: {
@@ -28,15 +26,12 @@ const common = {
     },
 
     resolve: {
-        extensions: ['', '.jsx', '.js', '.json', '.scss'],
-        modulesDirectories: ['node_modules', PATHS.app],
+        extensions: ['*', '.jsx', '.js', '.json', '.scss'],
+        modules: ['node_modules', PATHS.app],
     },
 
     module: {
-        loaders: [{
-            test: /bootstrap-sass\/assets\/javascripts\//,
-            loader: 'imports?jQuery=jquery',
-        }, {
+        rules: [{
             test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
             loader: 'url?limit=10000&mimetype=application/font-woff',
         }, {
@@ -55,7 +50,7 @@ const common = {
             test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
             loader: 'url?limit=10000&mimetype=image/svg+xml',
         }, {
-            test: /\.js$/,
+            test: /\.(js|jsx)$/,
             loaders: ['babel-loader'],
             exclude: /node_modules/,
         }, {
@@ -64,19 +59,31 @@ const common = {
         }, {
             test: /\.jpg$/,
             loader: 'file?name=[name].[ext]',
-        }],
-    },
-
-    postcss: (webpack) => (
-        [
-            autoprefixer({
-                browsers: ['last 2 versions'],
-            }),
-            postcssImport({
-                addDependencyTo: webpack,
-            }),
+        }, {
+            test: /\.css$/,
+            use: [
+                'style-loader',
+                { loader: 'css-loader', options: { importLoaders: 1 } },
+                { loader: 'postcss-loader', options: {
+                    ident: 'postcss',
+                    plugins: () => [
+                        postcssPresetEnv(/* pluginOptions */)
+                    ]
+                } }
+            ]
+        }, {
+            test: /\.s[ac]ss$/i,
+            use: [
+              // Creates `style` nodes from JS strings
+              'style-loader',
+              // Translates CSS into CommonJS
+              'css-loader',
+              // Compiles Sass to CSS
+              'sass-loader',
+            ],
+          },
         ]
-    ),
+    },
 };
 
 if (TARGET === 'start' || !TARGET) {

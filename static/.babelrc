@@ -1,11 +1,13 @@
 {
-  "presets": ["react", "es2015" , "stage-0"],
-  "plugins": [
-    ["transform-decorators-legacy"]
-  ],
+  "presets": ["@babel/preset-react", ["@babel/preset-env", {
+    "targets": "> 5%, not dead",
+    "useBuiltIns": "usage",
+    "corejs": 3,
+    "modules": false
+  }]],
   "env": {
     "start": {
-      "presets": ["react-hmre"]
+      "plugins": ["react-hot-loader/babel", "@babel/plugin-proposal-optional-chaining"]
     }
   }
 }

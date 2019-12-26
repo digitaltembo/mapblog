@@ -1,21 +1,39 @@
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
+    mode: 'production',
     devtool: 'source-map',
-
-    entry: ['bootstrap-loader/extractStyles'],
 
     output: {
         publicPath: 'dist/',
     },
 
     module: {
-        loaders: [{
-            test: /\.scss$/,
-            loader: 'style!css!postcss-loader!sass',
-        }],
+        rules: [
+            {
+                test: /\.css$/,
+                use: [MiniCssExtractPlugin.loader, 'css-loader'],
+            },
+        ],
     },
+
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                styles: {
+                    name: 'styles',
+                    test: /\.css$/,
+                    chunks: 'all',
+                    enforce: true,
+                },
+            },
+        },
+        minimize: true,
+        minimizer: [new TerserPlugin()],
+    },
+
 
     plugins: [
         new webpack.DefinePlugin({
@@ -24,13 +42,8 @@ module.exports = {
             },
             __DEVELOPMENT__: false,
         }),
-        new ExtractTextPlugin('bundle.css'),
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.OccurenceOrderPlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-            compress: {
-                warnings: false,
-            },
+        new MiniCssExtractPlugin({
+          filename: 'bundle.css',
         }),
     ],
 };

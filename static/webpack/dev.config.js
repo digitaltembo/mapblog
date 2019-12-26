@@ -1,10 +1,10 @@
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
+    mode: 'development',
     devtool: 'cheap-module-eval-source-map',
     entry: [
-        'bootstrap-loader',
         'webpack-hot-middleware/client',
         './src/index',
     ],
@@ -12,11 +12,27 @@ module.exports = {
         publicPath: '/dist/',
     },
 
+
     module: {
-        loaders: [{
-            test: /\.scss$/,
-            loader: 'style!css?localIdentName=[path][name]--[local]!postcss-loader!sass',
-        }],
+        rules: [
+            {
+                test: /\.css$/,
+                use: [MiniCssExtractPlugin.loader, 'css-loader'],
+            },
+        ],
+    },
+
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                styles: {
+                    name: 'styles',
+                    test: /\.css$/,
+                    chunks: 'all',
+                    enforce: true,
+                },
+            },
+        },
     },
 
     plugins: [
@@ -26,10 +42,11 @@ module.exports = {
             },
             __DEVELOPMENT__: true,
         }),
-        new ExtractTextPlugin('bundle.css'),
-        new webpack.optimize.OccurenceOrderPlugin(),
+        new MiniCssExtractPlugin({
+          filename: 'bundle.css',
+        }),
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
         new webpack.ProvidePlugin({
             jQuery: 'jquery',
         }),

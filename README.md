@@ -1,139 +1,63 @@
-# React-Redux-Flask #
+# Flask-React-Redux-MaterialUI Boilerplate
 
-Boilerplate application for a Flask JWT Backend and a React/Redux Front-End with Material UI.
+This is forked from https://github.com/dternyak/React-Redux-Flask, with some updates to modernize the requirements and with some opinionated modifications to get it to work how I want it. I imagine it will be somewhat fluid as I make other projects using this as a stepping stone. Further improvements I want:
+* Get the tests working properly
+* Provide some further infrastructure to get it to work a) on Heroku (it is part way there, I believe) or b) on a Raspberry Pi
 
-* Python 2.7+ or 3.x
-* Pytest
-* Heroku
-* Flask
-* React
-* Redux
-* React-Router 2.0
-* React-Router-Redux
-* Babel 6
-* SCSS processing
-* Webpack
 
-![screenshot](http://i.imgur.com/ZIS4qkw.png)
+## Running it locally
 
-### Create DB
-```sh
+Running the Flask/React app locally and doing development is super easy, most changes to any frontend or backend code (python, JS, CSS) are loaded pretty quickly into the running application. To get this running locally you need to:
+
+### 1. Install the dependencies
+
+To install the python dependencies, you need python3 and pip
+```
+$ python3 -m venv venv        # Creates a python3 virtual environment
+$ source venv/bin/activate    # puts your terminal into that virtual environment
+$ pip install -r requirements # installs the requirements
+```
+To install the js dependencies, I use npm version 5.6.0.
+``` 
+$ cd static
+$ npm install
+```
+
+These steps should take a bit, and may require some finagling with outside dependencies (apt/brew) depending on your machine.
+
+### 2. Prepare the DB
+
+I use sqlite, but technically it should work with postgres or mysql as well; the project uses [SQLAlchemy](https://www.sqlalchemy.org/) with [Alembic](https://alembic.sqlalchemy.org/en/latest/) for DB management.
+
+To specify the DB, it is necessary that you set the environment variable `DATABASE_URL`. You can use 
+```
 $ export DATABASE_URL="postgresql://username:password@localhost/mydatabase"
-
 or
-
 $ export DATABASE_URL="mysql+mysqlconnector://username:password@localhost/mydatabase"
-
 or
-
 $ export DATABASE_URL="sqlite:///your.db"
 ```
-(More about connection strings in this [flask config guide](http://flask-sqlalchemy.pocoo.org/2.1/config/).)
-```
-$ python manage.py create_db
-$ python manage.py db upgrade
-$ python manage.py db migrate
-```
+(I put this definition in the venv/bin/activate bash script, but it just needs to be accessible whenever you run the server)
 
-To update database after creating new migrations, use:
-
-```sh
-$ python manage.py db upgrade
+Having specified the DATABASE_URL, and while within the python virtual environment, run 
+```
+$ python manage.py create_db # (this creates the DB)
+$ python manage.py db upgrade # (this runs any and all unrun migrations)
 ```
 
-### Install Front-End Requirements
-```sh
-$ cd static
-$ npm install
-```
+(In general, use `python manage.py db migrate` to generate the necessary migration files from changes to the `models.py` file, and `python manage.py db upgrade` to run these migrations)
 
-### Run Back-End
+### 3. Run in development mode
 
-```sh
-$ python manage.py runserver
-```
-
-### Test Back-End
-
-```sh
-$ python test.py --cov-report=term --cov-report=html --cov=application/ tests/
-```
-
-### Run Front-End
-
-```sh
-$ cd static
-$ npm start
-```
-
-### Build Front-End
-
-```sh
-$ npm run build:production
-```
-
-### New to Python?
-
-If you are approaching this demo as primarily a frontend dev with limited or no python experience, you may need to install a few things that a seasoned python dev would already have installed.
-
-Most Macs already have python 2.7 installed but you may not have pip install. You can check to see if you have them installed:
-
-```
-$ python --version
-$ pip --version 
-```
-
-If pip is not installed, you can follow this simple article to [get both homebrew and python](https://howchoo.com/g/mze4ntbknjk/install-pip-on-mac-os-x)
-
-After you install python, you can optionally also install python 3
-
-```
-$ brew install python3
-```
-
-Now you can check again to see if both python and pip are installed. Once pip is installed, you can download the required flask modules:
-
-```
-$ sudo pip install flask flask_script flask_migrate flask_bcrypt 
-```
-
-Now, you can decide on which database you wish to use. 
-
-#### New to MySQL? 
-
-If you decide on MySQL, install the free community edition of [MySQL](https://dev.mysql.com/downloads/mysql/) and [MySQL Workbench](https://www.mysql.com/products/workbench/)
-
-1. start MySQL from the System Preferences
-2. open MySQL Workbench and [create a database](http://stackoverflow.com/questions/5515745/create-a-new-database-with-mysql-workbench) called mydatabase but don't create the tables since python will do that for you
-3. Install the MySQL connector for Python, add the DATABASE_URL configuration, and create the database and tables
-
-```
-$ sudo pip install mysql-connector-python-rf
-$ export DATABASE_URL="mysql+mysqlconnector://username:password@localhost/mydatabase"
-$ python manage.py create_db
-```
-
-Note: you do not need to run "python manage.py db upgrade" or "python manage.py db migrate" if its your first go at it
-
-4. Run Back-End
-
+To run the Flask backend, while in the python3 virtual environment do
 ```
 $ python manage.py runserver
 ```
 
-If all goes well, you should see ```* Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)``` followed by a few more lines in the terminal.
-
-5. open a new tab to the same directory and run the front end
-
+To run the node frontend, do
 ```
-$ cd static
-$ npm install
-$ npm start
+cd static
+npm start
 ```
 
-6. open your browser to http://localhost:3000/register and setup your first account
-7. enjoy! By this point, you should be able to create an account and login without errors. 
-
-
-
-
+(To compile the frontend, do `npm run build:production`) 

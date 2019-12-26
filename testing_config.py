@@ -1,5 +1,5 @@
 from flask_testing import TestCase
-from application.app import app, db
+from application import app, db
 from application.models import User
 import os
 from setup import basedir

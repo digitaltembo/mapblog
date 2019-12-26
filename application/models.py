@@ -1,24 +1,40 @@
-from index import db, bcrypt
+from index import db
+from werkzeug.security import generate_password_hash, check_password_hash
+import pickle
+import time
 
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    email = db.Column(db.String(255), unique=True)
-    password = db.Column(db.String(255))
+    username = db.Column(db.String(255), unique=True)
+    password = db.Column(db.String(255), nullable=False)
 
-    def __init__(self, email, password):
-        self.email = email
-        self.active = True
+    is_superuser = db.Column(db.Boolean(), default=False)
+
+    def __init__(self, username, password, is_superuser=False):
+        self.username = username
         self.password = User.hashed_password(password)
+        self.is_superuser = is_superuser
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "is_superuser": self.is_superuser,
+        }
 
     @staticmethod
     def hashed_password(password):
-        return bcrypt.generate_password_hash(password).decode("utf-8")
+        return generate_password_hash(password)
 
     @staticmethod
-    def get_user_with_email_and_password(email, password):
-        user = User.query.filter_by(email=email).first()
-        if user and bcrypt.check_password_hash(user.password, password):
+    def find_user(username, password):
+        user = User.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password, password):
             return user
         else:
             return None
+
