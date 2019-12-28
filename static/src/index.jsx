@@ -15,7 +15,6 @@ const render = () => {
   ReactDOM.render(
     <AppContainer>
       <Provider store={store}>
-        <h1>Wow</h1>
         <BrowserRouter>
           <Routes />
         </BrowserRouter>

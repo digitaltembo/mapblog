@@ -45,7 +45,7 @@ const common = {
             loader: 'url?limit=10000&mimetype=application/font-otf',
         }, {
             test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-            loader: 'file',
+            loader: 'file-loader',
         }, {
             test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
             loader: 'url?limit=10000&mimetype=image/svg+xml',
@@ -55,10 +55,10 @@ const common = {
             exclude: /node_modules/,
         }, {
             test: /\.png$/,
-            loader: 'file?name=[name].[ext]',
+            loader: 'file-loader?name=[name].[ext]',
         }, {
             test: /\.jpg$/,
-            loader: 'file?name=[name].[ext]',
+            loader: 'file-loader?name=[name].[ext]',
         }, {
             test: /\.css$/,
             use: [

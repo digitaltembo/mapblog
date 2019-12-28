@@ -37,7 +37,7 @@ export default function() {
   return (
     <App>
       <Switch>
-        <DetermineAuthRoute exact path="/"><Foo /></DetermineAuthRoute>
+        <DetermineAuthRoute exact path="/"><pages.MapBlog /></DetermineAuthRoute>
         <DetermineAuthRoute path="/login"><pages.Login /></DetermineAuthRoute>
 
         <DetermineAuthRoute path="/foo"><Foo /></DetermineAuthRoute>
